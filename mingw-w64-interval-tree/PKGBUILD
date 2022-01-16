@@ -1,0 +1,24 @@
+# Maintainer: Wilfried Holzke
+# contributers:
+
+_realname=interval-tree
+pkgbase=mingw-w64-${_realname}
+pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
+pkgver=1.2
+pkgrel=1
+pkgdesc="A C++ header only interval tree implementation."
+arch=('any')
+mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clang32')
+url="https://github.com/5cript/interval-tree"
+license=("CC0-1.0")
+makedepends=("${MINGW_PACKAGE_PREFIX}-pkg-config")
+source=("$pkgname-$pkgver.tar.gz::https://github.com/5cript/interval-tree/archive/refs/tags/${pkgver}.tar.gz")
+sha256sums=('e8af02f9944faad91d4d30f4bac7c694d12c8e1152cf0ad0a87b7c000506f284')
+
+package() {
+  cd "${srcdir}/${_realname}-${pkgver}"
+
+  mkdir -p ${pkgdir}/usr/include/interval-tree
+
+  cp interval_t*.hpp ${pkgdir}/usr/include/interval-tree
+}
