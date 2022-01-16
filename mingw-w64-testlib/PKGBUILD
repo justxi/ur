@@ -1,0 +1,41 @@
+# Maintainer: Wilfried Holzke
+# contributers:
+
+_realname=testlib
+pkgbase=mingw-w64-${_realname}
+pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
+pkgver=0.0.1
+pkgrel=1
+pkgdesc="A test library built with CMake (mingw-w64)"
+arch=('any')
+mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clang32')
+url="https://github.com/justxi/testlib"
+license=("GPL")
+makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
+             "${MINGW_PACKAGE_PREFIX}-cmake"
+             "${MINGW_PACKAGE_PREFIX}-ninja"
+             "${MINGW_PACKAGE_PREFIX}-pkg-config")
+depends=("${MINGW_PACKAGE_PREFIX}-gcc-libs")
+#options=('staticlibs' 'strip')
+source=("https://github.com/justxi/testlib/archive/refs/tags/v0.0.1.tar.gz")
+sha256sums=('8623f7ac6153ff98a1d3a940beab8a471808c577aca7cd9553c17f818a0b906e')
+
+build() {
+  [[ -d "${srcdir}"/build-${MINGW_CHOST} ]] && rm -rf "${srcdir}"/build-${MINGW_CHOST}
+  mkdir "${srcdir}"/build-${MINGW_CHOST} && cd "${srcdir}"/build-${MINGW_CHOST}
+
+  MSYS2_ARG_CONV_EXCL="-DCMAKE_INSTALL_PREFIX=" \
+  ${MINGW_PREFIX}/bin/cmake.exe \
+    -GNinja \
+    -DCMAKE_INSTALL_PREFIX=${MINGW_PREFIX} \
+    -DCMAKE_BUILD_TYPE=Release \
+    ../${_realname}-${pkgver}
+
+  ${MINGW_PREFIX}/bin/cmake --build .
+}
+
+package() {
+  cd "${srcdir}/build-${MINGW_CHOST}"
+
+  DESTDIR="${pkgdir}" ${MINGW_PREFIX}/bin/cmake --build . --target install
+}
